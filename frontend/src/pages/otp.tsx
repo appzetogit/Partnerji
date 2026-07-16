@@ -307,6 +307,96 @@ function Otp() {
     );
   }
 
+  // STEP: USER DETAILS FORM (First-time users)
+  if (step === "details") {
+    return (
+      <MobileFrame className="bg-[#fdfdfd]" frameClassName="bg-[#fdfdfd]">
+        <div className="flex-1 flex flex-col px-6 pt-6 pb-6 bg-white justify-between overflow-y-auto no-scrollbar">
+          <div className="space-y-5">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => setStep("otp")}
+                className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 cursor-pointer"
+              >
+                <ArrowLeft size={18} className="text-slate-700" />
+              </button>
+              <div className="flex items-center gap-1.5">
+                <div className="h-1.5 w-10 rounded-full bg-primary" />
+                <div className="h-1.5 w-4 rounded-full bg-slate-200" />
+              </div>
+              <div className="w-10" />
+            </div>
+
+            <div className="text-center flex flex-col items-center">
+              <h1 className="text-xl font-black text-slate-800">Complete Your Profile</h1>
+              <p className="text-[11px] text-slate-500 mt-1 max-w-[280px] leading-relaxed">
+                Please provide your name and email to finish setting up your account.
+              </p>
+            </div>
+
+            {/* Form Fields */}
+            <div className="space-y-4 pt-4">
+              {/* Name Input */}
+              <div className="space-y-1">
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
+                  Full Name
+                </label>
+                <div className={`flex items-center h-[50px] rounded-xl bg-white border ${errors.name ? "border-red-400 focus-within:ring-red-100" : "border-slate-200 focus-within:border-primary focus-within:ring-primary/10"} focus-within:ring-4 shadow-sm overflow-hidden transition-all px-4 gap-3`}>
+                  <User size={16} className="text-slate-400" />
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      if (errors.name) setErrors(prev => ({ ...prev, name: "" }));
+                    }}
+                    placeholder="Enter your name"
+                    className="flex-1 h-full bg-transparent text-sm font-bold outline-none text-slate-800"
+                  />
+                </div>
+                {errors.name && (
+                  <p className="text-[10px] font-semibold text-red-500">{errors.name}</p>
+                )}
+              </div>
+
+              {/* Email Input */}
+              <div className="space-y-1">
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
+                  Email Address
+                </label>
+                <div className={`flex items-center h-[50px] rounded-xl bg-white border ${errors.email ? "border-red-400 focus-within:ring-red-100" : "border-slate-200 focus-within:border-primary focus-within:ring-primary/10"} focus-within:ring-4 shadow-sm overflow-hidden transition-all px-4 gap-3`}>
+                  <Mail size={16} className="text-slate-400" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (errors.email) setErrors(prev => ({ ...prev, email: "" }));
+                    }}
+                    placeholder="Enter your email address"
+                    className="flex-1 h-full bg-transparent text-sm font-bold outline-none text-slate-800"
+                  />
+                </div>
+                {errors.email && (
+                  <p className="text-[10px] font-semibold text-red-500">{errors.email}</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Submit */}
+          <button
+            onClick={handleRegisterSubmit}
+            className="w-full h-[54px] grad-primary text-white font-bold rounded-xl flex items-center justify-center shadow-soft active:scale-[0.98] transition cursor-pointer mt-4"
+          >
+            Complete Registration
+          </button>
+        </div>
+      </MobileFrame>
+    );
+  }
+
   // STEP: PROVIDER DETAILS FORM
   if (step === "provider_details") {
     return (

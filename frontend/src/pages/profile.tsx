@@ -14,15 +14,13 @@ import {
   Smartphone,
   Info,
   History,
-  FileQuestion,
   FileText,
   Lock,
   Edit2,
   X,
   User,
   Mail,
-  Phone,
-  RefreshCw
+  Phone
 } from "lucide-react";
 
 export const Route = createFileRoute("/profile")({
@@ -108,22 +106,19 @@ function ProfilePage() {
     }
   };
 
-  const handleSwitchToProvider = () => {
-    localStorage.setItem("user_role", "Provider");
-    toast.success("Switched to Companion Mode");
-    navigate({ to: "/Provider/home" });
-  };
-
-  const menuItems = [
-    { Icon: History, label: "Transaction History", to: "/wallet" as const },
-    { Icon: Star, label: "My rating", to: "/my-rating" as const },
-    { Icon: MapPin, label: "Manage addresses", to: "/manage-addresses" as const },
-    { Icon: Settings, label: "Settings", to: "/settings" as const },
-    { Icon: RefreshCw, label: "Switch to Companion Mode", onClick: handleSwitchToProvider },
-    { Icon: Info, label: "About Partnerji", to: "/about" as const },
-    { Icon: FileQuestion, label: "FAQ", to: "/faq" as const },
-    { Icon: FileText, label: "Terms & Conditions", to: "/terms" as const },
-    { Icon: Lock, label: "Privacy Policy", to: "/privacy" as const },
+  const menuItems: Array<{
+    Icon: React.ComponentType<any>;
+    label: string;
+    to?: any;
+    onClick?: () => void;
+  }> = [
+    { Icon: History, label: "Transaction History", to: "/wallet" },
+    { Icon: Star, label: "My rating", to: "/my-rating" },
+    { Icon: MapPin, label: "Manage addresses", to: "/manage-addresses" },
+    { Icon: Settings, label: "Settings", to: "/settings" },
+    { Icon: Info, label: "About Partnerji", to: "/about" },
+    { Icon: FileText, label: "Terms & Conditions", to: "/terms" },
+    { Icon: Lock, label: "Privacy Policy", to: "/privacy" },
   ];
 
   return (

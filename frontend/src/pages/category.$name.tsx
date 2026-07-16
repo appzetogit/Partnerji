@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MobileFrame, Avatar, OnlineDot, VerifiedBadge } from "@/components/Partnerji/Shell";
 import { getCompanionsByCategory } from "@/lib/Partnerji-data";
+import { homeServicesData, HOME_SERVICE_CATEGORIES, formatReviews, type HomeService } from "@/lib/services-data";
 import {
   ArrowLeft,
   Search,
@@ -14,7 +15,10 @@ import {
   Languages,
   X,
   SlidersHorizontal,
-  Check
+  Check,
+  Clock,
+  ShoppingCart,
+  Wrench
 } from "lucide-react";
 import { useState, useMemo } from "react";
 
@@ -34,70 +38,70 @@ const photoMap: Record<string, string> = {
 };
 
 // Category icon imports
-import iconShopping from "../assest/categoryicon/shopping-removebg-preview.png";
-import iconTravel from "../assest/categoryicon/Travel-removebg-preview.png";
-import iconEvent from "../assest/categoryicon/Event-removebg-preview.png";
-import iconGym from "../assest/categoryicon/Gym-removebg-preview.png";
-import iconDining from "../assest/categoryicon/Dinning-removebg-preview.png";
-import iconAssistant from "../assest/categoryicon/Assistant-removebg-preview.png";
-import iconCorporate from "../assest/categoryicon/Corporate-removebg-preview.png";
+import iconAC from "../assest/categoryicon/AC-removebg-preview.png";
+import iconCar from "../assest/categoryicon/Car-removebg-preview.png";
+import iconDecoration from "../assest/categoryicon/Decoration-removebg-preview.png";
+import iconMixer from "../assest/categoryicon/Mixer-removebg-preview.png";
+import iconTV from "../assest/categoryicon/TV-removebg-preview.png";
+import iconFan from "../assest/categoryicon/Fan-removebg-preview.png";
+import iconWashingMachine from "../assest/categoryicon/WashingMachine-removebg-preview.png";
 
 const categoryIconMap: Record<string, string> = {
-  Shopping: iconShopping,
-  Travel: iconTravel,
-  Event: iconEvent,
-  Gym: iconGym,
-  Dining: iconDining,
-  Assistant: iconAssistant,
-  Corporate: iconCorporate,
+  AC: iconAC,
+  Car: iconCar,
+  Decoration: iconDecoration,
+  Mixer: iconMixer,
+  TV: iconTV,
+  Fan: iconFan,
+  WashingMachine: iconWashingMachine,
 };
 
 const categoryMetaData: Record<string, { desc: string; emoji: string; themeClass: string; accentClass: string; iconBg: string }> = {
-  Shopping: {
-    desc: "Vetted shopping mates to help you select, negotiate, or assist with premium city shopping.",
-    emoji: "🛍️",
-    themeClass: "from-pink-100 via-slate-50 to-rose-100",
-    accentClass: "text-pink-600 bg-pink-50 border-pink-200",
-    iconBg: "bg-pink-500/10"
+  AC: {
+    desc: "Book verified technicians for AC service, repair, installation, and maintenance at your doorstep.",
+    emoji: "❄️",
+    themeClass: "from-sky-100 via-slate-50 to-cyan-100",
+    accentClass: "text-sky-600 bg-sky-50 border-sky-200",
+    iconBg: "bg-sky-500/10"
   },
-  Travel: {
-    desc: "Connect with vetted travel companions to explore scenic lakes, heritage sites, or go on weekend getaways.",
-    emoji: "✈️",
-    themeClass: "from-sky-100 via-slate-50 to-blue-100",
+  Car: {
+    desc: "Find reliable car services — from wash and repairs to on-demand chauffeur and car rental options.",
+    emoji: "🚗",
+    themeClass: "from-blue-100 via-slate-50 to-indigo-100",
     accentClass: "text-blue-600 bg-blue-50 border-blue-200",
     iconBg: "bg-blue-500/10"
   },
-  Event: {
-    desc: "Find outgoing social companions and charming plus-ones for concerts, celebrations, and corporate mixers.",
-    emoji: "🎉",
+  Decoration: {
+    desc: "Get expert decorators for birthdays, weddings, parties, and all special occasions.",
+    emoji: "🎀",
     themeClass: "from-fuchsia-100 via-slate-50 to-violet-100",
     accentClass: "text-fuchsia-600 bg-fuchsia-50 border-fuchsia-200",
     iconBg: "bg-fuchsia-500/10"
   },
-  Gym: {
-    desc: "Crush your workouts with highly motivated training buddies and fitness guides.",
-    emoji: "💪",
+  Mixer: {
+    desc: "Get your kitchen appliances — mixers, grinders, and blenders — serviced and repaired at home.",
+    emoji: "🍹",
     themeClass: "from-amber-100 via-slate-50 to-orange-100",
     accentClass: "text-amber-600 bg-amber-50 border-amber-200",
     iconBg: "bg-amber-500/10"
   },
-  Dining: {
-    desc: "Cafe hopping or fine dining – explore the city's finest culinary delights with fellow foodies.",
-    emoji: "🍽️",
+  TV: {
+    desc: "Get your TV repaired, installed, or serviced by expert technicians at home.",
+    emoji: "📺",
     themeClass: "from-rose-100 via-slate-50 to-red-100",
     accentClass: "text-rose-600 bg-rose-50 border-rose-200",
     iconBg: "bg-rose-500/10"
   },
-  Assistant: {
-    desc: "Vetted companions to help co-study, co-game, run tasks, or manage busy personal schedules.",
-    emoji: "🧑‍💼",
+  Fan: {
+    desc: "Book certified technicians for ceiling fan, table fan installation, repair, and servicing.",
+    emoji: "🌀",
     themeClass: "from-emerald-100 via-slate-50 to-teal-100",
     accentClass: "text-emerald-600 bg-emerald-50 border-emerald-200",
     iconBg: "bg-emerald-500/10"
   },
-  Corporate: {
-    desc: "Polished assistants and networking companions for business mixers, presentations, and events.",
-    emoji: "💼",
+  WashingMachine: {
+    desc: "Get washing machine installation, repair, and servicing done by verified experts.",
+    emoji: "🫧",
     themeClass: "from-slate-200 via-slate-50 to-indigo-100",
     accentClass: "text-slate-800 bg-slate-100 border-slate-300",
     iconBg: "bg-slate-700/10"
@@ -110,6 +114,11 @@ export const Route = createFileRoute("/category/$name")({
 
 function CategoryDetailsPage() {
   const { name } = Route.useParams();
+
+  // Route home service categories to a different UI
+  if (HOME_SERVICE_CATEGORIES.includes(name)) {
+    return <HomeServicesPage name={name} />;
+  }
 
   const meta = categoryMetaData[name] || {
     desc: `Discover premium, verified companions specialized in ${name} services.`,
@@ -613,5 +622,192 @@ function FilterSection({ title, children }: { title: string; children: React.Rea
       <div className="text-[10px] font-black text-slate-500 uppercase tracking-wider">{title}</div>
       {children}
     </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// HomeServicesPage — Urban Company style service listing
+// ─────────────────────────────────────────────────────────────────
+
+const categoryDisplayName: Record<string, string> = {
+  AC: "AC Services",
+  Car: "Car Services",
+  TV: "TV Repair",
+  Fan: "Fan Services",
+  Mixer: "Mixer Repair",
+  WashingMachine: "Washing Machine",
+  Decoration: "Decoration",
+};
+
+const categoryEmoji: Record<string, string> = {
+  AC: "❄️", Car: "🚗", TV: "📺", Fan: "🌀",
+  Mixer: "🍹", WashingMachine: "🫧", Decoration: "🎀",
+};
+
+const categoryTheme: Record<string, { gradient: string; accent: string; accentText: string }> = {
+  AC: { gradient: "from-sky-50 to-cyan-50", accent: "bg-sky-600", accentText: "text-sky-600" },
+  Car: { gradient: "from-blue-50 to-indigo-50", accent: "bg-blue-600", accentText: "text-blue-600" },
+  TV: { gradient: "from-rose-50 to-red-50", accent: "bg-rose-600", accentText: "text-rose-600" },
+  Fan: { gradient: "from-emerald-50 to-teal-50", accent: "bg-emerald-600", accentText: "text-emerald-600" },
+  Mixer: { gradient: "from-amber-50 to-orange-50", accent: "bg-amber-600", accentText: "text-amber-600" },
+  WashingMachine: { gradient: "from-indigo-50 to-slate-100", accent: "bg-indigo-600", accentText: "text-indigo-600" },
+  Decoration: { gradient: "from-fuchsia-50 to-violet-50", accent: "bg-fuchsia-600", accentText: "text-fuchsia-600" },
+};
+
+function HomeServicesPage({ name }: { name: string }) {
+  const services = homeServicesData[name] ?? [];
+  const displayName = categoryDisplayName[name] ?? name;
+  const emoji = categoryEmoji[name] ?? "🔧";
+
+  const [bookedService, setBookedService] = useState<HomeService | null>(null);
+  const [booked, setBooked] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredServices = services.filter(s =>
+    s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    s.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleBook = (service: HomeService) => {
+    setBookedService(service);
+  };
+
+  const confirmBooking = () => {
+    if (bookedService) {
+      setBooked(prev => new Set([...prev, bookedService.id]));
+      setBookedService(null);
+    }
+  };
+
+  return (
+    <MobileFrame withNav className="bg-white">
+      <div className="flex-1 overflow-y-auto no-scrollbar pb-20 bg-white">
+
+        {/* Sticky header */}
+        <header className="px-4 pt-5 pb-3 flex items-center gap-3 bg-white/95 backdrop-blur-md sticky top-0 z-20 border-b border-slate-100/80 shadow-sm">
+          <Link
+            to="/home"
+            className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 transition-all active:scale-95 shrink-0"
+          >
+            <ArrowLeft size={16} />
+          </Link>
+          <div className="flex items-center gap-2 flex-1">
+            <h1 className="text-sm font-extrabold text-slate-800 tracking-tight leading-tight">{displayName}</h1>
+          </div>
+        </header>
+
+        {/* Search */}
+        <div className="px-4 pt-4 pb-2">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+            <input
+              type="text"
+              placeholder={`Search ${displayName.toLowerCase()}...`}
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="w-full h-9 pl-8 pr-4 rounded-xl border border-slate-200 bg-white shadow-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 text-xs font-semibold placeholder-slate-400 transition-all"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-slate-200 flex items-center justify-center"
+              >
+                <X size={10} className="text-slate-600" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Service Cards */}
+        <div className="px-4 bg-white divide-y divide-slate-100">
+          {filteredServices.length === 0 ? (
+            <div className="bg-white border border-slate-100 rounded-2xl p-8 text-center space-y-2 shadow-sm">
+              <div className="text-3xl">🔍</div>
+              <p className="text-xs font-bold text-slate-500">No services found</p>
+              <button onClick={() => setSearchQuery("")} className="text-[10px] text-primary font-bold underline">Clear search</button>
+            </div>
+          ) : (
+            filteredServices.map(service => {
+              const isBooked = booked.has(service.id);
+              return (
+                <div
+                  key={service.id}
+                  className="py-5 flex gap-4 justify-between items-start bg-white"
+                >
+                  {/* Left Side: Service Details */}
+                  {/* Left Side: Service Details (Link to details page) */}
+                  <Link
+                    to="/companion/$id"
+                    params={{ id: service.id }}
+                    className="flex-1 space-y-1 text-left block cursor-pointer group"
+                  >
+                    {/* Title */}
+                    <h3 className="font-extrabold text-sm text-slate-800 leading-tight group-hover:text-primary transition-colors">
+                      {service.name}
+                    </h3>
+
+                    {/* Price */}
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-800">
+                      <span>₹{service.price.toLocaleString()}</span>
+                      {service.originalPrice && (
+                        <span className="text-[10px] text-slate-400 line-through font-medium">
+                          ₹{service.originalPrice.toLocaleString()}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-[10px] text-slate-500 leading-relaxed max-w-[240px] line-clamp-2">
+                      {service.description}
+                    </p>
+                  </Link>
+
+                  {/* Right Side: Image and Book Button */}
+                  <div className="relative flex flex-col items-center shrink-0 w-24">
+                    {/* Image Container (Link to details page) */}
+                    <Link
+                      to="/companion/$id"
+                      params={{ id: service.id }}
+                      className="relative w-24 h-24 rounded-xl overflow-hidden bg-slate-100 border border-slate-100/50 block cursor-pointer"
+                    >
+                      {service.image ? (
+                        <img
+                          src={service.image}
+                          alt={service.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400">
+                          {emoji}
+                        </div>
+                      )}
+
+                      {/* Top-right green rating overlay badge */}
+                      <span className="absolute top-0 right-0 bg-emerald-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded-bl-lg flex items-center gap-0.5 shadow-sm">
+                        <Star size={8} className="fill-white text-white" />
+                        {service.rating.toFixed(1)}
+                      </span>
+                    </Link>
+
+                    {/* Book Button (Overlapping at the bottom) */}
+                    <Link
+                      to="/book/$id"
+                      params={{ id: service.id }}
+                      className={`absolute -bottom-3 h-7 px-5 rounded-lg font-black text-[11px] shadow-md transition-all active:scale-95 border flex items-center justify-center ${
+                        isBooked
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-200 cursor-default"
+                          : "bg-white text-primary border-slate-200 hover:border-primary hover:bg-slate-50"
+                      }`}
+                    >
+                      {isBooked ? "Booked" : "Book"}
+                    </Link>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
+    </MobileFrame>
   );
 }

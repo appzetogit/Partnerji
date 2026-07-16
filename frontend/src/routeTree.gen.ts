@@ -30,6 +30,7 @@ import { Route as ConfirmedRouteImport } from './pages/confirmed'
 import { Route as ChatbotRouteImport } from './pages/chatbot'
 import { Route as ChatRouteImport } from './pages/chat'
 import { Route as BookingsRouteImport } from './pages/bookings'
+import { Route as AdminRouteImport } from './pages/admin'
 import { Route as AboutRouteImport } from './pages/about'
 import { Route as ProviderIndexRouteImport } from './pages/Provider/index'
 import { Route as CompanionIdRouteImport } from './pages/companion.$id'
@@ -172,6 +173,11 @@ const ChatRoute = ChatRouteImport.update({
 const BookingsRoute = BookingsRouteImport.update({
   id: '/bookings',
   path: '/bookings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -371,6 +377,7 @@ const ProviderAuthDetailsRoute = ProviderAuthDetailsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/bookings': typeof BookingsRoute
   '/chat': typeof ChatRoute
   '/chatbot': typeof ChatbotRoute
@@ -432,6 +439,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/bookings': typeof BookingsRoute
   '/chat': typeof ChatRoute
   '/chatbot': typeof ChatbotRoute
@@ -494,6 +502,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/bookings': typeof BookingsRoute
   '/chat': typeof ChatRoute
   '/chatbot': typeof ChatbotRoute
@@ -557,6 +566,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/about'
+    | '/admin'
     | '/bookings'
     | '/chat'
     | '/chatbot'
@@ -618,6 +628,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/about'
+    | '/admin'
     | '/bookings'
     | '/chat'
     | '/chatbot'
@@ -679,6 +690,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/about'
+    | '/admin'
     | '/bookings'
     | '/chat'
     | '/chatbot'
@@ -741,6 +753,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRoute
   BookingsRoute: typeof BookingsRoute
   ChatRoute: typeof ChatRoute
   ChatbotRoute: typeof ChatbotRoute
@@ -946,6 +959,13 @@ declare module '@tanstack/react-router' {
       path: '/bookings'
       fullPath: '/bookings'
       preLoaderRoute: typeof BookingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -1243,6 +1263,7 @@ const ProviderSessionRouteWithChildren = ProviderSessionRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRoute,
   BookingsRoute: BookingsRoute,
   ChatRoute: ChatRoute,
   ChatbotRoute: ChatbotRoute,
