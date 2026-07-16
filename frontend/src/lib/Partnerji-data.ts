@@ -37,12 +37,35 @@ export const companions: Companion[] = [
   { id: "aditi", name: "Aditi Rao", category: "Corporate Assistant", emoji: "💼", rating: 4.8, reviews: 115, price: 750, distance: "2.5 km", languages: ["English", "Hindi", "Telugu"], gender: "Female", online: true, verified: true, bookings: 195, experience: "4 yrs", color: "from-teal-400 to-emerald-500", photo: "imagesdd.jpg", bio: "MBA graduate. Ideal companion for corporate events, networking mixers, business meets, and professional support." },
 ];
 
-export const categories = [
-  { name: "Shopping", emoji: "🛍️" }, { name: "Travel", emoji: "✈️" },
-  { name: "Event", emoji: "🎉" }, { name: "Gym", emoji: "💪" },
-  { name: "Dining", emoji: "🍽️" }, { name: "Assistant", emoji: "🧑‍💼" },
-  { name: "Corporate", emoji: "💼" },
+export let categories: { name: string; emoji?: string; image?: string }[] = [
+  { name: "AC", emoji: "❄️" }, { name: "Car", emoji: "🚗" },
+  { name: "Decoration", emoji: "🎀" }, { name: "Mixer", emoji: "🍹" },
+  { name: "TV", emoji: "📺" }, { name: "Fan", emoji: "🌀" },
+  { name: "WashingMachine", emoji: "🫧" },
 ];
+
+if (typeof window !== "undefined") {
+  const saved = localStorage.getItem("partnerji_categories");
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) {
+        categories.length = 0;
+        categories.push(...parsed);
+      }
+    } catch (e) {
+      console.error("Error loading categories from localStorage:", e);
+    }
+  }
+}
+
+export const updateCategories = (newCats: { name: string; emoji?: string; image?: string }[]) => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("partnerji_categories", JSON.stringify(newCats));
+  }
+  categories.length = 0;
+  categories.push(...newCats);
+};
 
 export const getCompanion = (id: string) => companions.find(c => c.id === id) ?? companions[0];
 
@@ -52,13 +75,13 @@ export const getCompanionsByCategory = (catName: string) => {
     const cCat = c.category.toLowerCase();
     
     // Explicit mappings to capture matches properly
-    if (norm === "shopping" && cCat.includes("shopping")) return true;
-    if (norm === "travel" && (cCat.includes("travel") || cCat.includes("guide") || cCat.includes("city"))) return true;
-    if (norm === "event" && cCat.includes("event")) return true;
-    if (norm === "gym" && cCat.includes("gym")) return true;
-    if (norm === "dining" && cCat.includes("dining")) return true;
-    if (norm === "assistant" && (cCat.includes("assistant") || cCat.includes("study") || cCat.includes("gaming"))) return true;
-    if (norm === "corporate" && (cCat.includes("corporate") || cCat.includes("assistant"))) return true;
+    if (norm === "ac" && cCat.includes("shopping")) return true;
+    if (norm === "car" && (cCat.includes("travel") || cCat.includes("guide") || cCat.includes("city"))) return true;
+    if (norm === "decoration" && cCat.includes("event")) return true;
+    if (norm === "mixer" && cCat.includes("gym")) return true;
+    if (norm === "tv" && cCat.includes("dining")) return true;
+    if (norm === "fan" && (cCat.includes("assistant") || cCat.includes("study") || cCat.includes("gaming"))) return true;
+    if (norm === "washingmachine" && (cCat.includes("corporate") || cCat.includes("assistant"))) return true;
     
     return cCat.includes(norm) || norm.includes(cCat);
   });

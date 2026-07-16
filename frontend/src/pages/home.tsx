@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { MobileFrame, Avatar, OnlineDot, VerifiedBadge } from "@/components/Partnerji/Shell";
 import { companions, categories } from "@/lib/Partnerji-data";
 import { MapPin, Bell, Search, Star, ChevronDown, ChevronRight } from "lucide-react";
+import { getBanners, getOffers } from "@/lib/dynamicContent";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -58,13 +59,13 @@ const mostBookedServices = [
     discount: ""
   }
 ];
-import iconShopping from "../assest/categoryicon/shopping-removebg-preview.png";
-import iconTravel from "../assest/categoryicon/Travel-removebg-preview.png";
-import iconEvent from "../assest/categoryicon/Event-removebg-preview.png";
-import iconGym from "../assest/categoryicon/Gym-removebg-preview.png";
-import iconDining from "../assest/categoryicon/Dinning-removebg-preview.png";
-import iconAssistant from "../assest/categoryicon/Assistant-removebg-preview.png";
-import iconCorporate from "../assest/categoryicon/Corporate-removebg-preview.png";
+import iconAC from "../assest/categoryicon/AC-removebg-preview.png";
+import iconCar from "../assest/categoryicon/Car-removebg-preview.png";
+import iconDecoration from "../assest/categoryicon/Decoration-removebg-preview.png";
+import iconMixer from "../assest/categoryicon/Mixer-removebg-preview.png";
+import iconTV from "../assest/categoryicon/TV-removebg-preview.png";
+import iconFan from "../assest/categoryicon/Fan-removebg-preview.png";
+import iconWashingMachine from "../assest/categoryicon/WashingMachine-removebg-preview.png";
 import pUntitled from "../assest/peopleimage/Untitled.jpg";
 import pImages from "../assest/peopleimage/images.jpg";
 import pImages1 from "../assest/peopleimage/images1.jpg";
@@ -80,20 +81,31 @@ const photoMap: Record<string, string> = {
 };
 
 const categoryIconMap: Record<string, string> = {
-  Shopping: iconShopping,
-  Travel: iconTravel,
-  Event: iconEvent,
-  Gym: iconGym,
-  Dining: iconDining,
-  Assistant: iconAssistant,
-  Corporate: iconCorporate,
+  AC: iconAC,
+  Car: iconCar,
+  Decoration: iconDecoration,
+  Mixer: iconMixer,
+  TV: iconTV,
+  Fan: iconFan,
+  WashingMachine: iconWashingMachine,
 };
 
 export const Route = createFileRoute("/home")({ component: HomePage });
 
 function HomePage() {
   const [activeBanner, setActiveBanner] = useState(0);
-  const banners = [mainBanner, mainBanner2, mainBanner3];
+
+  // Load dynamic banners from admin; fall back to static images if none uploaded
+  const adminBanners = getBanners().filter(b => b.active);
+  const banners: string[] = adminBanners.length > 0
+    ? adminBanners.map(b => b.imageUrl)
+    : [mainBanner, mainBanner2, mainBanner3];
+
+  // Load dynamic offers from admin; fall back to static images if none uploaded
+  const adminOffers = getOffers().filter(o => o.active);
+  const offerImagesDisplay: string[] = adminOffers.length > 0
+    ? adminOffers.map(o => o.imageUrl)
+    : offerImages;
 
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
   const [searchVal, setSearchVal] = useState("");
@@ -209,10 +221,13 @@ function HomePage() {
           {categories.map(c => (
             <Link to="/category/$name" params={{ name: c.name }} key={c.name} className="group flex flex-col items-center gap-0.5 active:scale-95 transition-all duration-300">
               <div className="w-16 h-16 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                {categoryIconMap[c.name]
-                  ? <img src={categoryIconMap[c.name]} alt={c.name} className="w-14 h-14 object-contain" />
-                  : <span className="text-3xl">{c.emoji}</span>
-                }
+                {c.image ? (
+                  <img src={c.image} alt={c.name} className="w-14 h-14 object-contain" />
+                ) : categoryIconMap[c.name] ? (
+                  <img src={categoryIconMap[c.name]} alt={c.name} className="w-14 h-14 object-contain" />
+                ) : (
+                  <span className="text-3xl">{c.emoji || "📁"}</span>
+                )}
               </div>
               <div className="text-[11px] font-medium text-slate-800 group-hover:text-primary transition-colors -mt-1">{c.name}</div>
             </Link>
@@ -255,7 +270,7 @@ function HomePage() {
         {/* offers & discounts */}
         <SectionHeader title="Offers & Discounts" />
         <div className="pl-5 flex gap-3 overflow-x-auto no-scrollbar pb-2">
-          {offerImages.map((img, idx) => (
+          {offerImagesDisplay.map((img, idx) => (
             <div key={idx} className="min-w-[230px] w-[230px] rounded-md overflow-hidden shadow-sm shrink-0 cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all duration-300">
               <img src={img} alt={`Offer ${idx + 1}`} className="w-full h-auto object-fill block" />
             </div>

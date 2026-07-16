@@ -4,7 +4,6 @@ import ChatBot from "./ChatBot";
 
 const tabs = [
   { to: "/home", label: "Home", Icon: Home },
-  { to: "/explore", label: "Explore", Icon: Search },
   { to: "/bookings", label: "Bookings", Icon: ClipboardList },
   { to: "/wallet", label: "Wallet", Icon: Wallet },
   { to: "/profile", label: "Profile", Icon: User },
