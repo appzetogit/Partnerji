@@ -1,27 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MobileFrame } from "@/components/Partnerji/Shell";
 import { ArrowLeft, Info, HelpCircle, Star, ShieldCheck } from "lucide-react";
+import { getAboutContent } from "@/lib/dynamicContent";
 
 export const Route = createFileRoute("/about")({ component: AboutPage });
 
+const IconMap: Record<string, React.ComponentType<any>> = {
+  ShieldCheck,
+  Star,
+  HelpCircle
+};
+
 function AboutPage() {
-  const points = [
-    {
-      Icon: ShieldCheck,
-      title: "Vetted Companions",
-      desc: "Every companion partner undergoes a robust identity background check, phone verification, and code-of-conduct training before meeting you."
-    },
-    {
-      Icon: Star,
-      title: "Platonic Relationships Only",
-      desc: "Partnerji is built purely for social matches (e.g. gym partner, business companion, dining, movie outings). We enforce platonic-only policies."
-    },
-    {
-      Icon: HelpCircle,
-      title: "24/7 Security Operations",
-      desc: "Our dispatch teams monitor live locations and respond immediately to SOS alarms triggered during active companionship events."
-    }
-  ];
+  const content = getAboutContent();
 
   return (
     <MobileFrame>
@@ -43,9 +34,9 @@ function AboutPage() {
               P
             </div>
             <h2 className="text-lg font-black text-slate-800">Partnerji</h2>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">VERSION 1.0.0 (BUILD 214)</p>
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{content.version}</p>
             <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed pt-2">
-              Partnerji is a trusted platonic companionship platform matching social seekers with verified local companion partners for dinners, events, or mutual hobbies.
+              {content.description}
             </p>
           </div>
 
@@ -56,8 +47,8 @@ function AboutPage() {
             </p>
 
             <div className="space-y-3">
-              {points.map((p, i) => {
-                const Icon = p.Icon;
+              {content.points.map((p, i) => {
+                const Icon = IconMap[p.iconName] || HelpCircle;
                 return (
                   <div key={i} className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex gap-3.5">
                     <div className="w-9 h-9 rounded-xl bg-violet-50 text-primary flex items-center justify-center shrink-0 border border-violet-100">
@@ -65,7 +56,7 @@ function AboutPage() {
                     </div>
                     <div>
                       <h3 className="font-extrabold text-xs text-slate-800 leading-snug">{p.title}</h3>
-                      <p className="text-[11px] text-slate-500 mt-1.5 leading-relaxed">{p.desc}</p>
+                      <p className="text-[11px] text-slate-505 mt-1.5 leading-relaxed">{p.desc}</p>
                     </div>
                   </div>
                 );
@@ -75,9 +66,8 @@ function AboutPage() {
 
           {/* Bottom message */}
           <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 text-center">
-            <p className="text-[11px] text-slate-500 leading-relaxed">
-              Designed with care in Mumbai, India. <br />
-              © 2026 Partnerji Technologies Private Limited. All rights reserved.
+            <p className="text-[11px] text-slate-500 leading-relaxed whitespace-pre-line">
+              {content.footer}
             </p>
           </div>
         </div>

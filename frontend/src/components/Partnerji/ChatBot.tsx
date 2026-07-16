@@ -235,9 +235,8 @@ export default function ChatBot({ withNav }: { withNav: boolean }) {
     };
   };
 
-  // Exclude Chatbot on specific pages
   const hideOnPaths = ["/login", "/otp", "/chat", "/chatbot"];
-  if (hideOnPaths.includes(pathname) || pathname.startsWith("/Provider")) {
+  if (hideOnPaths.includes(pathname) || pathname.startsWith("/Provider") || pathname.startsWith("/category") || pathname.startsWith("/companion") || pathname.startsWith("/book")) {
     return null;
   }
 

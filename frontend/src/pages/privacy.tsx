@@ -1,32 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MobileFrame } from "@/components/Partnerji/Shell";
 import { ArrowLeft, Shield } from "lucide-react";
+import { getPrivacyContent } from "@/lib/dynamicContent";
 
 export const Route = createFileRoute("/privacy")({ component: PrivacyPage });
 
 function PrivacyPage() {
-  const privacyList = [
-    {
-      title: "1. Privacy Commitment",
-      desc: "At Partnerji, we respect your privacy and are committed to protecting your personal data. This policy explains how we collect and manage your information.",
-    },
-    {
-      title: "2. Information Collection",
-      desc: "We collect basic profile information (name, phone number, location, etc.) and booking preferences. We use this data strictly to match you with suitable partners and process requests.",
-    },
-    {
-      title: "3. Location Sharing & Safety",
-      desc: "For user and companion safety, we access real-time location data only during active bookings. This coordinates meeting points and powers emergency SOS alerts.",
-    },
-    {
-      title: "4. Data Protection & Sharing",
-      desc: "Your data is encrypted in transit and at rest. We never sell your personal information or transaction history to third-party marketing companies.",
-    },
-    {
-      title: "5. Your Rights",
-      desc: "You can update your personal information, delete active logs, or request complete account deletion at any time by contacting our support desk.",
-    },
-  ];
+  const content = getPrivacyContent();
 
   return (
     <MobileFrame>
@@ -43,14 +23,14 @@ function PrivacyPage() {
 
         <div className="px-5 pt-4 space-y-4">
           <div className="bg-emerald-50/50 border border-emerald-100 rounded-2xl p-5">
-            <p className="text-emerald-600 font-bold text-sm">Effective Date: July 15, 2026</p>
+            <p className="text-emerald-600 font-bold text-sm">Effective Date: {content.effectiveDate}</p>
             <p className="text-xs text-slate-500 mt-2 leading-relaxed">
-              We value your privacy. Learn how we handle your personal data and maintain a secure service ecosystem.
+              {content.headerDesc}
             </p>
           </div>
 
           <div className="space-y-3">
-            {privacyList.map((p, i) => (
+            {content.privacyList.map((p, i) => (
               <div key={i} className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
                 <h3 className="font-bold text-slate-800 text-sm flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
@@ -76,3 +56,5 @@ function PrivacyPage() {
     </MobileFrame>
   );
 }
+
+export default PrivacyPage;

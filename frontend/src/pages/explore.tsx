@@ -447,7 +447,11 @@ function ExplorePage() {
                                 : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
                             }`}
                           >
-                            <span>{c.emoji}</span>
+                            {c.image ? (
+                              <img src={c.image} alt={c.name} className="w-3.5 h-3.5 object-contain" />
+                            ) : (
+                              <span>{c.emoji || "📁"}</span>
+                            )}
                             <span>{c.name}</span>
                             {active && <Check size={8} className="stroke-[3]" />}
                           </button>

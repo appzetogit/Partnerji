@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MobileFrame } from "@/components/Partnerji/Shell";
+import { getFAQContent } from "@/lib/dynamicContent";
 import {
   ArrowLeft,
   FileQuestion,
@@ -38,43 +39,7 @@ function FAQPage() {
   const [generatedTicketId, setGeneratedTicketId] = useState("");
   const [formError, setFormError] = useState("");
 
-  const faqs: FAQItem[] = [
-    {
-      cat: "Bookings",
-      q: "How do I book a companion partner?",
-      a: "Browse through verified companion profiles on the Explore page, select a partner that shares your interests, choose an available date and time slot, choose a public meetup location, and submit your booking request. Once they accept, you'll be notified.",
-    },
-    {
-      cat: "Safety",
-      q: "Is it safe to meet companions?",
-      a: "Yes. Safety is our number one priority. Every companion partner undergoes government ID verification, phone check, and code of conduct training. In addition, our safety desk tracks GPS locations in real time during active bookings, and you can trigger the emergency SOS alarm at any point.",
-    },
-    {
-      cat: "Payments",
-      q: "Can I pay the companion in cash directly?",
-      a: "No. All bookings, tips, and fees must be processed securely through the Partnerji application. Paying companions directly in cash or off-platform bank transfers is strictly prohibited and violates our terms of use.",
-    },
-    {
-      cat: "Cancellations",
-      q: "What is the cancellation policy?",
-      a: "You can cancel bookings through the app. Cancellations made more than 2 hours before the scheduled time are fully refundable. Cancellations made within 2 hours of the session may attract a cancellation fee to compensate the companion's travel time.",
-    },
-    {
-      cat: "Bookings",
-      q: "Can I book the same companion again?",
-      a: "Absolutely! You can find your previous companions in the Bookings history or by searching their name in Explore. You can re-book them directly from their profile screen.",
-    },
-    {
-      cat: "Payments",
-      q: "How do refunds work?",
-      a: "Refunds for cancelled bookings are credited back to your Partnerji Wallet instantly, or can be returned to your original payment method (bank account/card) in 3-5 business days depending on your bank's policy.",
-    },
-    {
-      cat: "Safety",
-      q: "What constitutes appropriate behavior?",
-      a: "All meetups are strictly platonic and public. Any requests for physical intimacy, private residential meetups, or inappropriate communication will result in immediate permanent suspension of your account. Please report any such behavior.",
-    }
-  ];
+  const faqs = getFAQContent();
 
   const categories = ["All", "Bookings", "Safety", "Payments", "Cancellations"];
 

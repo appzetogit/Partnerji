@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MobileFrame, Avatar, VerifiedBadge } from "@/components/Partnerji/Shell";
 import { getCompanion } from "@/lib/Partnerji-data";
-import { ArrowLeft, Share2, Heart, Star, MapPin, Award, Languages, Calendar } from "lucide-react";
+import { getHomeServiceById, type HomeService, formatReviews } from "@/lib/services-data";
+import { ArrowLeft, Share2, Heart, Star, MapPin, Award, Languages, Calendar, ShieldCheck, CheckCircle2, MessageSquare, Clock, Wrench } from "lucide-react";
 import { useState } from "react";
 
 // Companion images imports
@@ -31,6 +32,12 @@ export const Route = createFileRoute("/companion/$id")({ component: CompanionPro
 
 function CompanionProfile() {
   const { id } = Route.useParams();
+
+  const service = getHomeServiceById(id);
+  if (service) {
+    return <HomeServiceDetailsView service={service} />;
+  }
+
   const c = getCompanion(id);
   const [liked, setLiked] = useState(() => {
     return localStorage.getItem(`fav_${c.id}`) === "true";
@@ -343,5 +350,152 @@ function Section({ title, action, children }: { title: string; action?: string; 
       </div>
       {children}
     </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// HomeServiceDetailsView — Details page for Home Services
+// ─────────────────────────────────────────────────────────────────
+
+function HomeServiceDetailsView({ service }: { service: HomeService }) {
+  const mockReviews = [
+    { name: "Aman K.", rating: 5, time: "Yesterday", text: "Excellent service! The technician was very polite and completed the deep cleaning quickly. Highly recommend." },
+    { name: "Roochi S.", rating: 5, time: "3 days ago", text: "Very fast installation. Done within 40 minutes and tested everything properly. Extremely professional." },
+    { name: "Rahul M.", rating: 4, time: "Last week", text: "Good experience. Precision diagnosis. Fixed the PCB issue successfully." },
+  ];
+
+  return (
+    <MobileFrame className="bg-white">
+      <div className="flex-1 overflow-y-auto no-scrollbar pb-24 bg-white">
+        
+        {/* Cover Image / Hero Area */}
+        <div className="relative h-[240px] bg-slate-100 overflow-hidden border-b border-slate-100">
+          {service.image ? (
+            <img 
+              src={service.image} 
+              alt={service.name} 
+              className="w-full h-full object-cover" 
+            />
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center bg-slate-50 text-slate-400">
+              <span className="text-4xl mb-2">🔧</span>
+              <span className="text-xs font-bold">No Preview Image</span>
+            </div>
+          )}
+          
+          <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
+
+          {/* Header Action Buttons */}
+          <div className="absolute top-5 left-5 right-5 flex items-center justify-between z-10">
+            <Link 
+              to={`/category/${service.category}`} 
+              className="w-9 h-9 rounded-full bg-white/80 hover:bg-white backdrop-blur flex items-center justify-center text-slate-700 shadow transition-all active:scale-90"
+              title="Go back"
+            >
+              <ArrowLeft size={18} />
+            </Link>
+          </div>
+
+          {/* Title Overlay */}
+          <div className="absolute bottom-5 left-5 right-5 text-white">
+            <span className="bg-emerald-600 text-white text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded shadow">
+              {service.category} Services
+            </span>
+            <h1 className="font-extrabold text-lg mt-1 tracking-tight drop-shadow">{service.name}</h1>
+          </div>
+        </div>
+
+        {/* Rating and Duration */}
+        <div className="px-5 pt-5 flex items-center justify-between">
+          <div className="flex items-center gap-1 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-lg">
+            <Star size={12} className="fill-emerald-600 text-emerald-600 mr-0.5" />
+            <span className="text-xs font-extrabold text-emerald-700">{service.rating.toFixed(2)}</span>
+            <span className="text-[10px] text-emerald-600 font-semibold">Rating</span>
+          </div>
+
+          <div className="flex items-center gap-1 text-[11px] font-bold text-slate-500 bg-slate-50 border border-slate-200/50 px-2.5 py-1 rounded-lg">
+            <Clock size={12} className="text-slate-400 mr-0.5" />
+            <span>Duration: {service.duration}</span>
+          </div>
+        </div>
+
+        {/* Overview section */}
+        <div className="px-5 mt-5">
+          <h2 className="font-black text-xs text-slate-400 uppercase tracking-wider mb-2">Description</h2>
+          <p className="text-xs text-slate-600 leading-relaxed font-medium">
+            {service.description}
+          </p>
+        </div>
+
+        {/* Trust Badges section */}
+        <div className="px-5 mt-6 pt-5 border-t border-slate-100">
+          <h2 className="font-black text-xs text-slate-400 uppercase tracking-wider mb-3">Service Guarantees</h2>
+          <div className="grid grid-cols-2 gap-3.5">
+            {[
+              { icon: <ShieldCheck className="text-primary" size={20} />, title: "Verified Experts", desc: "Background checked" },
+              { icon: <CheckCircle2 className="text-emerald-600" size={20} />, title: "100% Quality", desc: "Genuine spare parts" },
+              { icon: <Clock className="text-blue-500" size={20} />, title: "On-Time Arrival", desc: "Service on schedule" },
+              { icon: <Wrench className="text-amber-500" size={20} />, title: "Free Revisit", desc: "No charge for 15 days" }
+            ].map((badge, idx) => (
+              <div key={idx} className="flex gap-2.5 items-start p-2.5 bg-slate-50 border border-slate-100 rounded-xl">
+                <div className="mt-0.5">{badge.icon}</div>
+                <div>
+                  <h4 className="text-[11px] font-extrabold text-slate-800 leading-tight">{badge.title}</h4>
+                  <p className="text-[9px] text-slate-400 font-semibold mt-0.5">{badge.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Mock Reviews */}
+        <div className="px-5 mt-6 pt-5 border-t border-slate-100">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-black text-xs text-slate-400 uppercase tracking-wider">Customer Reviews</h2>
+            <span className="text-[10px] text-primary font-bold">{formatReviews(service.reviews)} reviews</span>
+          </div>
+
+          <div className="space-y-4">
+            {mockReviews.map((r, idx) => (
+              <div key={idx} className="bg-slate-50 border border-slate-100/50 p-3 rounded-2xl">
+                <div className="flex justify-between items-center mb-1.5">
+                  <span className="text-[11px] font-black text-slate-700">{r.name}</span>
+                  <span className="text-[9px] text-slate-400 font-bold">{r.time}</span>
+                </div>
+                <div className="flex items-center gap-0.5 mb-2">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star 
+                      key={i} 
+                      size={10} 
+                      className={i < r.rating ? "fill-amber-400 text-amber-400" : "text-slate-200"} 
+                    />
+                  ))}
+                </div>
+                <p className="text-[11px] text-slate-500 leading-relaxed font-semibold">{r.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+
+      {/* Sticky Bottom Bar */}
+      <div className="sticky bottom-0 bg-white/95 backdrop-blur border-t border-slate-100 px-5 py-3.5 flex items-center justify-between shadow-[0_-6px_20px_rgba(0,0,0,0.03)] z-20">
+        <div>
+          <div className="text-slate-800 text-lg font-black tracking-tight">
+            ₹{service.price.toLocaleString()}
+          </div>
+          <p className="text-[9px] text-slate-400 font-semibold mt-0.5">Free diagnostic included</p>
+        </div>
+        <Link 
+          to="/book/$id" 
+          params={{ id: service.id }} 
+          className="px-6 h-11 rounded-xl bg-primary text-white font-extrabold text-xs shadow-md shadow-primary/20 flex items-center justify-center transition-all active:scale-[0.97]"
+        >
+          Book Now
+        </Link>
+      </div>
+
+    </MobileFrame>
   );
 }
